@@ -1,0 +1,31 @@
+package petStoreApi;
+
+import io.restassured.RestAssured;
+
+
+import static io.restassured.RestAssured.given;
+
+
+public class PetStoreApiTest {
+
+	 //BaseURI
+	public static String baseURI = "http://localhost:8080";
+	
+	public static void main(String args[]){
+		RestAssured.baseURI = baseURI;
+		given().
+	//	 param("status", "available").
+		 when().
+		 get("/api/v3/findByStatus").
+		 then().assertThat().statusCode(200);
+		 System.out.println("Request is executed successfully");
+			
+		
+		
+		
+		
+		
+	}
+	
+
+}

@@ -1,0 +1,18 @@
+package testRestAssured;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+public class TestRestAssured_Get {
+
+	@Test
+	public void testone() {
+		
+		Response response = RestAssured.get("https://api.restful-api.dev/objects");
+		System.out.print(response.getStatusCode());
+		System.out.print(response.getTime());
+	}
+}

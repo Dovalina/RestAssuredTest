@@ -1,0 +1,5 @@
+package petStoreApi;
+
+public class TestConfig {
+
+}

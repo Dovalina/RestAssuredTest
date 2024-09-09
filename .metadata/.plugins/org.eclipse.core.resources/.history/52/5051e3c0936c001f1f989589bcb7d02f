@@ -1,0 +1,31 @@
+package petStoreApi;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+public class PetStoreApiTest {
+
+	 //BaseURI
+	public static String baseURI = "http://localhost:8080/api/v3";
+	
+	public static void main(String args[]){
+		RestAssured.baseURI = baseURI;
+		given().
+		 param("status", "available").
+		 when().
+		 get("findByStatus").
+		 then().assertThat().statusCode(200);
+		 System.out.println("Request is executed successfully");
+			
+		
+		
+		
+		
+		
+	}
+	
+
+}

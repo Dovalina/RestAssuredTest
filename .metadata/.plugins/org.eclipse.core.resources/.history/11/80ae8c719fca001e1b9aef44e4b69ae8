@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * 
+ */
+module PruebaSelenium {
+	requires org.seleniumhq.selenium.api;
+}

@@ -1,0 +1,164 @@
+package petStoreApi;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+
+import static io.restassured.RestAssured.given;
+
+import org.testng.annotations.Test;
+
+import static org.hamcrest.Matchers.*;
+
+import java.io.File;
+
+
+
+
+public class PetStoreApiTest extends TestConfig {
+
+	 //BaseURI
+//	public static String baseURI = "http://localhost:8080/api/v3";
+	
+
+    @Test
+    public void testCreatePet() {
+        String requestBody = "{ \"id\": 101, \"name\": \"Mascota Inicial\", \"status\": \"available\" }";
+
+        Response response = given()
+            .body(requestBody)
+            .header("Content-Type", "application/json")
+        .when()
+            .post("/pet");
+
+        response.then()
+            .statusCode(200)
+            .body("name", equalTo("Mascota Inicial"))
+            .body("id", equalTo(101))
+            .body("status", equalTo("available"));
+
+        // Obtener y mostrar la información de la mascota creada
+        int id = response.jsonPath().getInt("id");
+        String name = response.jsonPath().getString("name");
+        String status = response.jsonPath().getString("status");
+
+        System.out.println("Mascota creada con ID: " + id + ", Nombre: " + name + ", Estado: " + status);
+    }
+
+    @Test
+    public void testGetPetById() {
+        int petId = 101; // Usar el ID de la mascota creada en la prueba anterior
+
+        Response response = given()
+            .pathParam("petId", petId)
+        .when()
+            .get("/pet/{petId}");
+
+        response.then()
+            .statusCode(200)
+            .body("id", equalTo(petId));
+
+        // Obtener y mostrar la información de la mascota consultada
+        int id = response.jsonPath().getInt("id");
+        String name = response.jsonPath().getString("name");
+        String status = response.jsonPath().getString("status");
+
+        System.out.println("Mascota consultada con ID: " + id + ", Nombre: " + name + ", Estado: " + status);
+    }
+
+    @Test
+    public void testUpdatePet() {
+        int petId = 101; // Usar el ID de la mascota creada en la prueba anterior
+        String requestBody = "{ \"id\": " + petId + ", \"name\": \"Mascota Actualizada\", \"status\": \"sold\" }";
+
+        Response response = given()
+            .body(requestBody)
+            .header("Content-Type", "application/json")
+        .when()
+            .put("/pet");
+
+        response.then()
+            .statusCode(200)
+            .body("name", equalTo("Mascota Actualizada"))
+            .body("status", equalTo("sold"));
+
+        // Obtener y mostrar la información actualizada de la mascota
+        int id = response.jsonPath().getInt("id");
+        String name = response.jsonPath().getString("name");
+        String status = response.jsonPath().getString("status");
+
+        System.out.println("Mascota actualizada con ID: " + id + ", Nuevo Nombre: " + name + ", Nuevo Estado: " + status);
+    }
+
+    @Test
+    public void testGetUpdatedPetById() {
+        int petId = 101; // Usar el ID de la mascota actualizada
+
+        Response response = given()
+            .pathParam("petId", petId)
+        .when()
+            .get("/pet/{petId}");
+
+        response.then()
+            .statusCode(200)
+            .body("id", equalTo(petId));
+
+        // Obtener y mostrar la información actualizada de la mascota
+        int id = response.jsonPath().getInt("id");
+        String name = response.jsonPath().getString("name");
+        String status = response.jsonPath().getString("status");
+
+        System.out.println("Mascota después de la actualización con ID: " + id + ", Nombre: " + name + ", Estado: " + status);
+    }
+    
+  
+    public void testUploadImage() {
+        String imageFilePath = "/path/to/image.jpg"; // Cambia esto a la ruta de tu archivo de imagen
+
+        given()
+            .pathParam("petId", 101) // Usar el ID de la mascota a la que se le subirá la imagen
+            .multiPart("file", new File(imageFilePath))
+        .when()
+            .post("/pet/{petId}/uploadImage")
+        .then()
+            .statusCode(200);
+    }
+
+
+    public void testDeletePet() {
+        int petId = 101; // Usar el ID de la mascota a eliminar
+
+        // Realizar la solicitud DELETE para eliminar la mascota
+        given()
+            .pathParam("petId", petId)
+        .when()
+            .delete("/pet/{petId}")
+        .then()
+            .statusCode(200);
+
+        // Intentar consultar la mascota para verificar que ha sido eliminada
+        Response response = given()
+            .pathParam("petId", petId)
+        .when()
+            .get("/pet/{petId}");
+
+        response.then()
+            .statusCode(404); // Verificar que el ID no se encuentra
+
+        // Imprimir un mensaje indicando que la mascota ha sido eliminada
+        System.out.println("La mascota con ID: " + petId + " ha sido eliminada.");
+    }
+
+    @Test
+    public void testFindPetsByStatus() {
+        given()
+            .queryParam("status", "available")
+        .when()
+            .get("/pet/findByStatus")
+        .then()
+            .statusCode(200)
+            .body("size()", greaterThan(0)); // Verificar que hay al menos una mascota con el estado "available"
+    }
+
+
+}
